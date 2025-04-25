@@ -7,6 +7,7 @@ from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
+from datetime import timedelta
 
 api = Blueprint('api', __name__)
 app = Flask(__name__)
@@ -52,8 +53,14 @@ def login_user():
         return jsonify({"msg": "Usuario no encontrado"}), 404
     if not bcrypt.check_password_hash(user.password, body["password"]):
         return jsonify({"msg": "Contraseña incorrecta"}), 401
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=user.id, expires_delta=timedelta(seconds=10))  # o minutes=15 por ejemplo
     return jsonify({
         "token": access_token,
         "user": user.serialize()
     }), 200
+
+@api.route("/private", methods=["GET"])
+@jwt_required()
+def private_area():
+    user_id = get_jwt_identity()
+    return jsonify({"msg": "Estás en una ruta privada", "user_id": user_id}), 200

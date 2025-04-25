@@ -25,7 +25,7 @@ export const Login = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       setError(null);
-      navigate("/"); // redirigir al Home
+      navigate("/private"); // redirigir al Home
     } else {
       setError(data.msg || "Error al iniciar sesión");
     }

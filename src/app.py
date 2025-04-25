@@ -11,6 +11,7 @@ from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
+from datetime import timedelta
 
 # from models import Person
 
@@ -35,6 +36,11 @@ jwt = JWTManager(app)
 #     token = TokenBlockedList.query.filter_by(jti=jti).first()
 #     # Retornar si consiguio el jti o no. Si lo consigue la peticion se bloquea, sino continua.
 #     return token is not None
+
+from datetime import timedelta
+
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(seconds=10)  # ⚠️ Pruebas con 10s
+
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
