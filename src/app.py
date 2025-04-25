@@ -10,6 +10,7 @@ from api.models import db
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from flask_jwt_extended import JWTManager
 
 # from models import Person
 
@@ -18,6 +19,22 @@ static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
 app.url_map.strict_slashes = False
+
+##### JWT Configuration
+# Se configura el JWT_SECRET_KEY para generar los tokens, tomando el valor de las variables de entorno
+app.config["JWT_SECRET_KEY"] = os.getenv("FLASK_APP_KEY")
+# Se crea la instancia de jwt
+jwt = JWTManager(app)
+
+# # Se registra el decorador que valida los tokens bloqueados
+# @jwt.token_in_blocklist_loader
+# def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+#     # Toma el jti del token
+#     jti = jwt_payload["jti"]
+#     # Busca el jti en la lista de token bloqueados
+#     token = TokenBlockedList.query.filter_by(jti=jti).first()
+#     # Retornar si consiguio el jti o no. Si lo consigue la peticion se bloquea, sino continua.
+#     return token is not None
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")

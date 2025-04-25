@@ -30,7 +30,7 @@ export const Signup = () => {
       }
 
       // Registro exitoso
-      navigate("/"); // redirige al Home
+      navigate("/login"); // redirige al Home
 
     } catch (err) {
       console.error("Error en la solicitud:", err);

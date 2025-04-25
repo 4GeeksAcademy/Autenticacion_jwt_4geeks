@@ -20,3 +20,8 @@ class User(db.Model):
             "fullname": self.fullname,
             # ⚠️ No incluir password por seguridad
         }
+
+# Agrego un modelo para guardar los tokens bloqueados por cierres de sesion
+class TokenBlockedList(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    jti: Mapped[str] = mapped_column(String(50), nullable=False)
