@@ -1,7 +1,12 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../../context/authContext";
 
 export const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/login" />;
+    const { user } = useAuth();
+
+    // Si no hay usuario, redirige a login
+    if (!user) return <Navigate to="/login" />;
+
+    // Si hay usuario, renderiza el contenido protegido
+    return children;
 };

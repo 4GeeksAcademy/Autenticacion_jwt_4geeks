@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, TokenBlockedList
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
@@ -60,7 +60,24 @@ def login_user():
     }), 200
 
 @api.route("/private", methods=["GET"])
-@jwt_required()
+@jwt_required() # Se agrega el decorador para que la ruta sea protegida
 def private_area():
-    user_id = get_jwt_identity()
-    return jsonify({"msg": "Estás en una ruta privada", "user_id": user_id}), 200
+    # Como es una ruta que solo se puede acceder con un token valido
+    # se tiene acceso a las funciones para obtener informacion del token
+    user_id = get_jwt_identity() # Obtiene el identity del token
+    user=User.query.get(user_id)
+    payload=get_jwt() # Obtiene todos los campos del payload del token
+    # Retornando la informacion del token y del usuario
+    return jsonify({
+        "user": user.serialize(),
+        "payload": payload}), 200
+
+@api.route("/logout", methods=["POST"])
+@jwt_required() 
+def user_logout():
+
+    payload=get_jwt() 
+    token_blocked=TokenBlockedList(jti=payload["jti"])
+    db.session.add(token_blocked)
+    db.session.commit()
+    return jsonify({"msg":"User logged out"})
